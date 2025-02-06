@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { getEmployeeById } from "../services/api";
-import { Form, Button, Container, Row, Col, Card } from "react-bootstrap";
+import { Form, Container, Row, Col, Card } from "react-bootstrap";
 import { useParams, useNavigate } from "react-router-dom";
+import { IoMdArrowRoundBack } from "react-icons/io"; // ✅ Import back arrow
 
 const EmployeeDetailsPage = () => {
   const { empNo } = useParams();
@@ -43,7 +44,18 @@ const EmployeeDetailsPage = () => {
 
   return (
     <Container className="mt-4">
-      <h2 className="text-center">Employee Details</h2>
+      {/* 🔙 Back Button */}
+      <div
+        style={{ display: "flex", alignItems: "center", marginBottom: "10px" }}
+      >
+        <IoMdArrowRoundBack
+          size={30}
+          style={{ cursor: "pointer" }}
+          onClick={() => navigate("/employees")} // ✅ Navigate back
+        />
+        <h2 style={{ marginLeft: "10px" }}>Employee Details</h2>
+      </div>
+
       <Card className="shadow-lg p-4 mt-3">
         <Card.Body>
           <Form>
@@ -140,8 +152,6 @@ const EmployeeDetailsPage = () => {
                 </Form.Group>
               </Col>
             </Row>
-
-            
           </Form>
         </Card.Body>
       </Card>

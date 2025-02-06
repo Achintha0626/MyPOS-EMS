@@ -7,11 +7,13 @@ import {
 } from "../services/api";
 import { Form, Button, Container, Row, Col, Card } from "react-bootstrap";
 import { useParams, useNavigate } from "react-router-dom";
+import { IoMdArrowRoundBack } from "react-icons/io"; // ✅ Import back arrow
 
 const EmployeeForm = () => {
   const { empNo } = useParams();
   const navigate = useNavigate();
-  const [departments, setDepartments] = useState([]); // Initialize empty list
+  const [departments, setDepartments] = useState([]);
+  const [error, setError] = useState(""); // ✅ State for validation error
 
   const [employee, setEmployee] = useState({
     empNo: "",
@@ -37,7 +39,7 @@ const EmployeeForm = () => {
     try {
       const response = await getDepartments();
       if (response.data && response.data.length > 0) {
-        setDepartments(response.data); // Use API response directly
+        setDepartments(response.data);
       }
     } catch (error) {
       console.error("Error fetching departments:", error);
@@ -48,17 +50,34 @@ const EmployeeForm = () => {
     try {
       const response = await getEmployeeById(empNo);
       let empData = response.data;
-
       empData.dateOfBirth = empData.dateOfBirth
         ? empData.dateOfBirth.split("T")[0]
         : "";
       empData.dateOfJoin = empData.dateOfJoin
         ? empData.dateOfJoin.split("T")[0]
         : "";
-
       setEmployee(empData);
     } catch (error) {
       console.error("Error fetching employee:", error);
+    }
+  };
+
+  // ✅ Function to validate Date of Joining
+  const validateDateOfJoining = (dob, doj) => {
+    if (!dob || !doj) return;
+
+    const birthDate = new Date(dob);
+    const joinDate = new Date(doj);
+
+    const minJoinDate = new Date(dob);
+    minJoinDate.setFullYear(minJoinDate.getFullYear() + 1); // Must be 1 year after DOB
+
+    if (joinDate < minJoinDate) {
+      setError(
+        "Date of Joining cant be previous from your birthday."
+      );
+    } else {
+      setError(""); // ✅ Clear error if valid
     }
   };
 
@@ -78,6 +97,11 @@ const EmployeeForm = () => {
       return;
     }
 
+    if (error) {
+      alert(error);
+      return;
+    }
+
     if (empNo) {
       await updateEmployee(employee);
     } else {
@@ -89,9 +113,20 @@ const EmployeeForm = () => {
 
   return (
     <Container className="mt-4">
-      <h2 className="text-center">
-        {empNo ? "Edit Employee" : "Add Employee"}
-      </h2>
+      {/* 🔙 Back Button */}
+      <div
+        style={{ display: "flex", alignItems: "center", marginBottom: "10px" }}
+      >
+        <IoMdArrowRoundBack
+          size={30}
+          style={{ cursor: "pointer" }}
+          onClick={() => navigate("/employees")} // ✅ Navigate to Employee List
+        />
+        <h2 style={{ marginLeft: "10px" }}>
+          {empNo ? "Edit Employee" : "Add Employee"}
+        </h2>
+      </div>
+
       <Card className="shadow-lg p-4 mt-3">
         <Card.Body>
           <Form onSubmit={handleSubmit}>
@@ -135,9 +170,13 @@ const EmployeeForm = () => {
                     type="date"
                     required
                     value={employee.dateOfBirth}
-                    onChange={(e) =>
-                      setEmployee({ ...employee, dateOfBirth: e.target.value })
-                    }
+                    onChange={(e) => {
+                      setEmployee({ ...employee, dateOfBirth: e.target.value });
+                      validateDateOfJoining(
+                        e.target.value,
+                        employee.dateOfJoin
+                      );
+                    }}
                   />
                 </Form.Group>
               </Col>
@@ -148,10 +187,15 @@ const EmployeeForm = () => {
                     type="date"
                     required
                     value={employee.dateOfJoin}
-                    onChange={(e) =>
-                      setEmployee({ ...employee, dateOfJoin: e.target.value })
-                    }
+                    onChange={(e) => {
+                      setEmployee({ ...employee, dateOfJoin: e.target.value });
+                      validateDateOfJoining(
+                        employee.dateOfBirth,
+                        e.target.value
+                      );
+                    }}
                   />
+                  {error && <p style={{ color: "red" }}>{error}</p>}
                 </Form.Group>
               </Col>
             </Row>
@@ -249,24 +293,8 @@ const EmployeeForm = () => {
               </Col>
             </Row>
 
-            <Row>
-              <Col md={6}>
-                <Form.Group>
-                  <Form.Label>Is Active?</Form.Label>
-                  <Form.Check
-                    type="checkbox"
-                    label="Active"
-                    checked={employee.isActive}
-                    onChange={(e) =>
-                      setEmployee({ ...employee, isActive: e.target.checked })
-                    }
-                  />
-                </Form.Group>
-              </Col>
-            </Row>
-
             <div className="text-center mt-3">
-              <Button variant="primary" type="submit">
+              <Button variant="primary" type="submit" disabled={error}>
                 {empNo ? "Update Employee" : "Add Employee"}
               </Button>
             </div>
