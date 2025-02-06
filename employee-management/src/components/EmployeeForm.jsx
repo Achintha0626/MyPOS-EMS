@@ -11,13 +11,7 @@ import { useParams, useNavigate } from "react-router-dom";
 const EmployeeForm = () => {
   const { empNo } = useParams();
   const navigate = useNavigate();
-  const [departments, setDepartments] = useState([
-    { code: "HR", name: "Human Resources" },
-    { code: "IT", name: "Information Technology" },
-    { code: "BA", name: "Business Analysis" },
-    { code: "PM", name: "Project Management" },
-    { code: "QA", name: "Quality Assurance" },
-  ]);
+  const [departments, setDepartments] = useState([]); // Initialize empty list
 
   const [employee, setEmployee] = useState({
     empNo: "",
@@ -43,16 +37,10 @@ const EmployeeForm = () => {
     try {
       const response = await getDepartments();
       if (response.data && response.data.length > 0) {
-        const mergedDepartments = [
-          ...departments,
-          ...response.data.filter(
-            (dept) => !departments.some((d) => d.code === dept.code)
-          ),
-        ];
-        setDepartments(mergedDepartments);
+        setDepartments(response.data); // Use API response directly
       }
     } catch (error) {
-      console.error("Error fetching departments, using defaults:", error);
+      console.error("Error fetching departments:", error);
     }
   };
 
@@ -236,8 +224,11 @@ const EmployeeForm = () => {
                   >
                     <option value="">Select Department</option>
                     {departments.map((dept) => (
-                      <option key={dept.code} value={dept.code}>
-                        {dept.name}
+                      <option
+                        key={dept.departmentCode}
+                        value={dept.departmentCode}
+                      >
+                        {dept.departmentName}
                       </option>
                     ))}
                   </Form.Select>
