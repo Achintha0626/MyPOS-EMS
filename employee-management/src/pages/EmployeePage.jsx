@@ -5,7 +5,6 @@ import { Container } from "react-bootstrap";
 const EmployeePage = () => {
   return (
     <Container>
-      
       <EmployeeList />
     </Container>
   );

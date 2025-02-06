@@ -69,16 +69,23 @@ export const updateEmployee = async (employeeData) => {
 // ✅ Delete an employee
 export const deleteEmployee = async (empNo) => {
   try {
-    const response = await api.delete(`/Employee/${empNo}`);
-    return response;
+    console.log("🔴 Attempting DELETE request for employee:", empNo);
+
+    const response = await api.delete(`/Employee/${empNo}`); // ⬅️ Ensure this API call is correct
+
+    console.log("🟢 API Response from DELETE request:", response);
+
+    return response; // Ensure it returns the response
   } catch (error) {
     console.error(
-      `Error deleting employee ${empNo}:`,
+      "🚨 DELETE API call failed:",
       error.response?.data || error.message
     );
     return null;
   }
 };
+
+
 
 // ✅ Fetch all departments for dropdown
 export const getDepartments = async () => {
