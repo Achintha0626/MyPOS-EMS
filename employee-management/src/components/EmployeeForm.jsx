@@ -7,13 +7,13 @@ import {
 } from "../services/api";
 import { Form, Button, Container, Row, Col, Card } from "react-bootstrap";
 import { useParams, useNavigate } from "react-router-dom";
-import { IoMdArrowRoundBack } from "react-icons/io"; // ✅ Import back arrow
+import { IoMdArrowRoundBack } from "react-icons/io"; 
 
 const EmployeeForm = () => {
   const { empNo } = useParams();
   const navigate = useNavigate();
   const [departments, setDepartments] = useState([]);
-  const [error, setError] = useState(""); // ✅ State for validation error
+  const [error, setError] = useState(""); 
 
   const [employee, setEmployee] = useState({
     empNo: "",
@@ -62,7 +62,7 @@ const EmployeeForm = () => {
     }
   };
 
-  // ✅ Function to validate Date of Joining
+  
   const validateDateOfJoining = (dob, doj) => {
     if (!dob || !doj) return;
 
@@ -73,11 +73,9 @@ const EmployeeForm = () => {
     minJoinDate.setFullYear(minJoinDate.getFullYear() + 1); // Must be 1 year after DOB
 
     if (joinDate < minJoinDate) {
-      setError(
-        "Date of Joining cant be previous from your birthday."
-      );
+      setError("Add Valid date");
     } else {
-      setError(""); // ✅ Clear error if valid
+      setError(""); 
     }
   };
 
@@ -113,7 +111,7 @@ const EmployeeForm = () => {
 
   return (
     <Container className="mt-4">
-      {/* 🔙 Back Button */}
+      
       <div
         style={{ display: "flex", alignItems: "center", marginBottom: "10px" }}
       >
@@ -287,6 +285,22 @@ const EmployeeForm = () => {
                     value={employee.basicSalary}
                     onChange={(e) =>
                       setEmployee({ ...employee, basicSalary: e.target.value })
+                    }
+                  />
+                </Form.Group>
+              </Col>
+            </Row>
+
+           
+            <Row>
+              <Col md={6}>
+                <Form.Group>
+                  <Form.Check
+                    type="checkbox"
+                    label="Active"
+                    checked={employee.isActive}
+                    onChange={(e) =>
+                      setEmployee({ ...employee, isActive: e.target.checked })
                     }
                   />
                 </Form.Group>
